@@ -7,6 +7,7 @@ class Router {
     public $rutasGET = [];
     public $rutasPOST = [];
     public $rutasPUT = [];
+    public $rutasDELETE = [];
 
     public function get($url, $fn) {
         $this->rutasGET[$url] = $fn;
@@ -17,6 +18,10 @@ class Router {
     public function put($url, $fn) {
 
         $this->rutasPUT[$url] = $fn;
+    }
+    public function delete($url, $fn) {
+
+        $this->rutasDELETE[$url] = $fn;
     }
 
     public function comprobarRutas() {
@@ -37,10 +42,22 @@ class Router {
         } else if ($metodo === "POST") {
             $fn = $this->rutasPOST[$urlActual] ?? null;
 
-        } else if ($metodo === "PUT") {
+        } else if ($metodo === "PUT" ) {
             foreach ($this->rutasPUT as $ruta => $fn) {
                 
                 $rutaRegex = preg_replace('/:\w+/', '(\d+)', $ruta);
+       
+                
+                if (preg_match("#^$rutaRegex$#", $urlActual, $matches)) {
+                
+                    return call_user_func_array($fn, array_slice($matches, 1));
+                }
+            }
+        } else if ($metodo === "DELETE" ) {
+            foreach ($this->rutasDELETE as $ruta => $fn) {
+                
+                $rutaRegex = preg_replace('/:\w+/', '(\d+)', $ruta);
+       
                 
                 if (preg_match("#^$rutaRegex$#", $urlActual, $matches)) {
                 

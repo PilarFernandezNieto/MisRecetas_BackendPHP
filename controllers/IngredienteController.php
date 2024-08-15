@@ -34,8 +34,6 @@ class IngredienteController {
         }
     }
     public static function actualizar($id) {
-
-
         if ($_SERVER["REQUEST_METHOD"] === "PUT") {
             $putData = file_get_contents("php://input");
             $data = json_decode($putData, true);
@@ -59,14 +57,24 @@ class IngredienteController {
         }
 
     }
-    public static function eliminar() {
+    public static function eliminar($id) {
 
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-            $id = $_POST["id"];
+        if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
+  
             $ingrediente = Ingrediente::find($id);
-            $resultado = $ingrediente->eliminar();
-            echo json_encode(["resultado" => $resultado]);
+            if(!$ingrediente){
+                echo json_encode(["resultado" => "No se ha encontrado el ingrediente"]);
+            } else {
+                try {
+                    $resultado = $ingrediente->eliminar();
+                    echo json_encode(["resultado" => $resultado]);
+                } catch(\Exception $error) {
+                     echo json_encode(["error" => "Error al eliminar el ingrediente. Comprueba que no forme parte de alguna receta"]);
+                }
+            }
+
+          
+            
         }
     }
 }

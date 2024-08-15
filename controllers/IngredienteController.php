@@ -33,22 +33,29 @@ class IngredienteController {
             
         }
     }
-    public static function actualizar() {
-
-        $alertas = [];
-        if(!is_numeric($_GET["id"])) return;
-        $ingrediente = Ingrediente::find($_GET["id"]);
+    public static function actualizar($id) {
 
 
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $ingrediente->sincronizar($_POST);
+        if ($_SERVER["REQUEST_METHOD"] === "PUT") {
+            $putData = file_get_contents("php://input");
+            $data = json_decode($putData, true);
+            $ingrediente = Ingrediente::find($id);
+            $ingrediente->sincronizar($data);
+      
             $alertas = $ingrediente->validar();
-            if(empty($alertas)){
+            
+            if (empty($alertas)) {
                 $resultado = $ingrediente->guardar();
                 echo json_encode(["resultado" => $resultado]);
             } else {
                 echo json_encode(["alertas" => $alertas]);
             }
+         
+
+            
+   
+
+ 
         }
 
     }

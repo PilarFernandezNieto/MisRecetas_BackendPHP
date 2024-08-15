@@ -28,6 +28,7 @@ class RecetaController {
 
     public static function crear() {
         $receta = new Receta();
+        $ingredientes = Ingrediente::all();
         $alertas = [];
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -73,10 +74,23 @@ class RecetaController {
         $alertas = [];
         if(!is_numeric($_GET["id"])) return;
         $receta = Receta::find($_GET["id"]);
-
+        $ingredientes = Ingrediente::ingredientesPorReceta($receta->id);
+       
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            
             $receta->sincronizar($_POST);
+           
+
+            foreach ($ingredientes as $id_ingrediente) {
+                $recetaIngrediente = new RecetaIngrediente([
+                    'id_receta' => $receta->id,
+                    'id_ingrediente' => $id_ingrediente
+                ]);
+                $recetaIngrediente->sincronizar();
+                $recetaIngrediente->guardar();
+            }
+           
             $alertas = $receta->validar();
             if(empty($alertas)){
                 $resultado = $receta->guardar();

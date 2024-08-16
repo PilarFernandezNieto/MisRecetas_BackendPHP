@@ -46,8 +46,6 @@ class Router {
             foreach ($this->rutasPUT as $ruta => $fn) {
                 
                 $rutaRegex = preg_replace('/:\w+/', '(\d+)', $ruta);
-       
-                
                 if (preg_match("#^$rutaRegex$#", $urlActual, $matches)) {
                 
                     return call_user_func_array($fn, array_slice($matches, 1));

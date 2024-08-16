@@ -11,9 +11,8 @@ $router = new Router();
 
 $router->get("/api/recetas", [RecetaController::class, "index"]);
 $router->post("/api/recetas",[RecetaController::class, "crear"] );
-$router->post("/api/recetas/eliminar", [RecetaController::class, "eliminar"]);
-$router->get("/api/recetas/actualizar", [RecetaController::class, "actualizar"]);
-$router->post("/api/recetas/actualizar", [RecetaController::class, "actualizar"]);
+$router->put("/api/recetas/actualizar/:id", [RecetaController::class, "actualizar"]);
+$router->post("/api/recetas/eliminar/:id", [RecetaController::class, "eliminar"]);
 
 $router->get("/api/ingredientes", [IngredienteController::class, "index"]);
 $router->post("/api/ingredientes",[IngredienteController::class, "crear"] );

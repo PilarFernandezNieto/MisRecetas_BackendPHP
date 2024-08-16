@@ -48,12 +48,6 @@ class IngredienteController {
             } else {
                 echo json_encode(["alertas" => $alertas]);
             }
-         
-
-            
-   
-
- 
         }
 
     }

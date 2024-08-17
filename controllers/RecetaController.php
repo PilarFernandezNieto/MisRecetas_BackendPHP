@@ -10,20 +10,20 @@ use Model\RecetaIngrediente;
 
 class RecetaController {
 
-    // public static function index() {
-    //     $recetas = Receta::all();
-    //     echo json_encode($recetas);
-    // }
-
     public static function index() {
         $recetas = Receta::all();
+        $recetaCompleta = [];
+        $recetasCompletas = [];
 
-        foreach($recetas as $receta){
-           $receta->ingredientes = Ingrediente::ingredientesPorReceta($receta->id);
+        foreach ($recetas as $receta) {
+            $ingredientes = Ingrediente::ingredientesPorReceta($receta->id);
+            $recetaCompleta = [
+                "receta" => $receta,
+                "ingredientes" => $ingredientes
+            ];
+            $recetasCompletas[] = $recetaCompleta;
         }
-   
-
-        echo json_encode($recetas);
+        echo json_encode($recetasCompletas);
     }
 
     public static function crear() {
@@ -33,6 +33,7 @@ class RecetaController {
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
+
             $receta->sincronizar($_POST);
 
             $alertas = $receta->validar();
@@ -41,13 +42,18 @@ class RecetaController {
             if (empty($alertas)) {
                 $resultado = $receta->guardar();
                 $id_receta = $resultado["id"];
-                if($id_receta){
-                    $ingredientes = $_POST['ingredientes'] ?? [];
+                if ($id_receta) {
+                    $ingredientesIds = $_POST["ingrediente_id"] ?? "";
+                    $cantidades = $_POST["cantidad"] ?? "";
+                  
 
-                    foreach ($ingredientes as $id_ingrediente) {
+                   for($i=0; $i<count($ingredientesIds); $i++) {
+                    $id_ingrediente = $ingredientesIds[$i];
+                    $cantidad = $cantidades[$i];
                         $recetaIngrediente = new RecetaIngrediente([
                             'id_receta' => $id_receta,
-                            'id_ingrediente' => $id_ingrediente
+                            'id_ingrediente' => $id_ingrediente,
+                            "cantidad" => $cantidad
                         ]);
                         $recetaIngrediente->sincronizar();
                         $recetaIngrediente->guardar();
@@ -63,43 +69,13 @@ class RecetaController {
                     'mensaje' => 'Hubo un error al crear la receta'
                 ]);
             }
-
-            
         }
     }
 
 
-    public static function actualizar() {
+    public static function actualizar($id) {
 
-        $alertas = [];
-        if(!is_numeric($_GET["id"])) return;
-        $receta = Receta::find($_GET["id"]);
-        $ingredientes = Ingrediente::ingredientesPorReceta($receta->id);
-       
-
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            
-            $receta->sincronizar($_POST);
-           
-
-            foreach ($ingredientes as $id_ingrediente) {
-                $recetaIngrediente = new RecetaIngrediente([
-                    'id_receta' => $receta->id,
-                    'id_ingrediente' => $id_ingrediente
-                ]);
-                $recetaIngrediente->sincronizar();
-                $recetaIngrediente->guardar();
-            }
-           
-            $alertas = $receta->validar();
-            if(empty($alertas)){
-                $resultado = $receta->guardar();
-                echo json_encode(["resultado" => $resultado]);
-            } else {
-                echo json_encode(["alertas" => $alertas]);
-            }
-        }
-
+      
     }
     public static function eliminar() {
 

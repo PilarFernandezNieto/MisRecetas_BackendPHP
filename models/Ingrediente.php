@@ -38,6 +38,7 @@ class Ingrediente extends ActiveRecord {
         INNER JOIN receta_ingrediente ri ON i.id = ri.id_ingrediente 
         WHERE ri.id_receta = " . $id . ";";
         $resultado = self::consultarSQL($query);
+        
         return $resultado;
 
     }

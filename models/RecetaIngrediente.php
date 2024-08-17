@@ -24,7 +24,38 @@ class RecetaIngrediente extends ActiveRecord {
         $this->cantidad = $args["cantidad"] ?? "";
     }
 
-  
+  public static function ingredientesPorReceta($id_receta){
+    $query = "
+        SELECT * 
+        FROM receta_ingrediente 
+        WHERE id_receta = ". $id_receta. "
+    ";
+    $resultado = self::SQL($query);
+    if (!$resultado) {
+        return [
+            'resultado' => 'error',
+            'mensaje' => 'Error en la consulta: ' . self::$db->error
+        ];
+    } else {
+        return $resultado;
+    }
+
+  }
+  public static function eliminarIngredienteDeReceta($id_receta, $id_ingrediente){
+    $query = "
+    DELETE FROM receta_ingrediente WHERE id_receta = $id_receta AND id_ingrediente = $id_ingrediente
+    ";
+    $resultado = self::SQL($query);
+    if (!$resultado) {
+        return [
+            'resultado' => 'error',
+            'mensaje' => 'Error en la consulta: ' . self::$db->error
+        ];
+    } else {
+        return $resultado;
+    }
+    
+  }
 
     
 

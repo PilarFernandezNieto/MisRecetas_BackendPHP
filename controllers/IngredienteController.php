@@ -29,10 +29,10 @@ class IngredienteController {
             } else {
                 echo json_encode(["alertas" => $alertas]);
             }
-
-            
         }
     }
+
+    
     public static function actualizar($id) {
         if ($_SERVER["REQUEST_METHOD"] === "PUT") {
             $putData = file_get_contents("php://input");

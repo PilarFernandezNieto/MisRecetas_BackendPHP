@@ -16,7 +16,7 @@ class Receta extends ActiveRecord {
     public $instrucciones;
     public $imagen;
     public $origen;
-    public $ingredientes;
+
 
 
     public function __construct($args = []) {
@@ -25,7 +25,7 @@ class Receta extends ActiveRecord {
         $this->instrucciones = $args["instrucciones"] ?? "";
         $this->imagen = $args["imagen"] ?? "";
         $this->origen = $args["origen"] ?? "";
-        $this->ingredientes = $args["ingredientes"] ?? "";
+        
     }
 
     // Mensajes de validación para la creación de una cuenta
@@ -39,44 +39,27 @@ class Receta extends ActiveRecord {
         return self::$alertas;
     }
 
-    public function recetaCompleta($id) {
-        if (!filter_var($id, FILTER_VALIDATE_INT)) {
-            return [
-                'resultado' => 'error',
-                'mensaje' => 'ID inválido'
-            ];
-        }
+    public static function recetasCompletas() {
+   
         $query = "
         SELECT r.*, i.id AS ingrediente_id, i.nombre AS ingrediente_nombre
         FROM recetas r
         INNER JOIN receta_ingrediente ri ON r.id = ri.id_receta
         INNER JOIN ingredientes i ON i.id = ri.id_ingrediente
-        WHERE r.id = $id
+        
     ";
         $resultado = self::$db->query($query);
+
         if (!$resultado) {
             return [
                 'resultado' => 'error',
                 'mensaje' => 'Error en la consulta: ' . self::$db->error
             ];
+        } else {
+            return $resultado;
         }
 
-        while ($registro = $resultado->fetch_assoc()) {
-            debuguear($registro);
-            $this->ingredientes = [
-                'ingrediente_id' => $registro["ingrediente_id"],
-                'ingrediente_nombre' => $registro["ingrediente_nombre"]
-            ];
-        }
-       
-        return [
-            'receta_id' => $id,
-            'receta_nombre' => $registro["nombre"] ?? '',
-            'instrucciones' => $registro["instrucciones"] ?? '',
-            'imagen' => $registro["imagen"] ?? '',
-            'origen' => $registro["origen"] ?? '',
-            'ingredientes' => $this->ingredientes
-        ];
+
      
     }
 }

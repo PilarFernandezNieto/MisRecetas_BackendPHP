@@ -26,6 +26,20 @@ class RecetaController {
         echo json_encode($recetasCompletas);
     }
 
+    public static function getById(){
+  
+        if(!is_numeric($_GET["id"])) return;
+        $receta = Receta::find($_GET["id"]);
+        $ingredientes = Ingrediente::ingredientesPorReceta($receta->id);
+     
+        
+        $recetaCompleta = [
+            "receta" => $receta,
+            "ingredientes" => $ingredientes
+        ];
+        echo json_encode($recetaCompleta);
+    }
+
     public static function crear() {
         $receta = new Receta();
         $ingredientes = Ingrediente::all();

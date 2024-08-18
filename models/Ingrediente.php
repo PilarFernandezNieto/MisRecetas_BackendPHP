@@ -33,13 +33,19 @@ class Ingrediente extends ActiveRecord {
 
     public static function ingredientesPorReceta($id){
         $query = "
-        SELECT i.id, i.nombre 
+        SELECT i.id, i.nombre, ri.cantidad 
         FROM ingredientes i 
         INNER JOIN receta_ingrediente ri ON i.id = ri.id_ingrediente 
         WHERE ri.id_receta = " . $id . ";";
-        $resultado = self::consultarSQL($query);
+        $resultado = self::$db->query($query);
+        $ingredientes = [];
+       while($ingrediente = $resultado->fetch_assoc()){
+        $ingredientes[] = $ingrediente;
+       }
+  
+ 
         
-        return $resultado;
+        return $ingredientes;
 
     }
     

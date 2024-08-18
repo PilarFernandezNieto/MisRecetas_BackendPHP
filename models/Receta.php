@@ -58,8 +58,6 @@ class Receta extends ActiveRecord {
         } else {
             return $resultado;
         }
-
-
      
     }
 }

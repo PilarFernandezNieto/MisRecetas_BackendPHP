@@ -100,6 +100,7 @@ class ActiveRecord {
             // Creando un nuevo registro
             $resultado = $this->crear();
         }
+        
         return $resultado;
     }
 
@@ -149,11 +150,13 @@ class ActiveRecord {
         $query .= " ) VALUES ('"; 
         $query .= join("', '", array_values($atributos));
         $query .= "') ";
-
+        
         //return json_encode(["query" => $query]); // debuguear fetch
 
         // Resultado de la consulta
         $resultado = self::$db->query($query);
+        
+  
         return [
            'resultado' =>  $resultado,
            'id' => self::$db->insert_id

@@ -105,8 +105,8 @@ class ActiveRecord {
     }
 
     // Devuelve todos los registros
-    public static function all() {
-        $query = "SELECT * FROM " . static::$tabla;
+    public static function all($campo_ordenacion = "") {
+        $query = "SELECT * FROM " . static::$tabla . " ORDER BY " . $campo_ordenacion;
         $resultado = self::consultarSQL($query);
         return $resultado;
     }

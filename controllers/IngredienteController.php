@@ -8,7 +8,7 @@ use Model\Ingrediente;
 class IngredienteController {
 
     public static function index() {
-        $ingredientes = Ingrediente::all();
+        $ingredientes = Ingrediente::all("nombre");
         echo json_encode($ingredientes);
     }
 
@@ -54,6 +54,11 @@ class IngredienteController {
                 echo json_encode(["alertas" => $alertas]);
             }
         }
+    }
+    public static function getById($id){
+        $ingrediente = Ingrediente::find($id);
+        
+        echo json_encode($ingrediente);
     }
 
 

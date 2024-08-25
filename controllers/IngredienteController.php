@@ -8,7 +8,7 @@ use Model\Ingrediente;
 class IngredienteController {
 
     public static function index() {
-        $ingredientes = Ingrediente::all("nombre");
+        $ingredientes = Ingrediente::all();
         echo json_encode($ingredientes);
     }
 
@@ -32,8 +32,8 @@ class IngredienteController {
                             "msg" => "Creado correctamente"
                         ]
                     );
-                }catch (\Exception $e) {
-                    if($e->getCode() === 1062){
+                } catch (\Exception $e) {
+                    if ($e->getCode() === 1062) {
                         echo json_encode(
                             [
                                 "resultado" => "error",
@@ -49,15 +49,14 @@ class IngredienteController {
                         );
                     }
                 }
-                    
-            }else {
+            } else {
                 echo json_encode(["alertas" => $alertas]);
             }
         }
     }
-    public static function getById($id){
+    public static function getById($id) {
         $ingrediente = Ingrediente::find($id);
-        
+
         echo json_encode($ingrediente);
     }
 
@@ -65,18 +64,34 @@ class IngredienteController {
     public static function actualizar($id) {
         if ($_SERVER["REQUEST_METHOD"] === "PUT") {
             $putData = file_get_contents("php://input");
+
             $data = json_decode($putData, true);
+
             $ingrediente = Ingrediente::find($id);
-            $ingrediente->sincronizar($data);
-
-            $alertas = $ingrediente->validar();
-
-            if (empty($alertas)) {
-                $resultado = $ingrediente->guardar();
-                echo json_encode(["resultado" => $resultado]);
+            if (!$ingrediente) {
+                echo json_encode(["resultado" => "No se ha encontrado el ingrediente"]);
             } else {
-                echo json_encode(["alertas" => $alertas]);
+                $ingrediente->sincronizar($data);
+                $alertas = $ingrediente->validar();
+                if (empty($alertas)) {
+                    $resultado = $ingrediente->guardar();
+                    echo json_encode(
+                        [
+                            "resultado" => $resultado,
+                            "msg" => "Actualizado correctamente",
+                            "ingrediente" => $ingrediente
+                        ]
+                    );
+                } else {
+                    echo json_encode(["alertas" => $alertas]);
+                }
             }
+
+           
+
+          
+
+      
         }
     }
     public static function eliminar($id) {
@@ -91,7 +106,7 @@ class IngredienteController {
                     $resultado = $ingrediente->eliminar();
                     echo json_encode(["resultado" => $resultado]);
                 } catch (\Exception $error) {
-                    echo json_encode(["error" => "Error al eliminar el ingrediente. Comprueba que no forme parte de alguna receta"]);
+                    echo json_encode(["error" => $error->getMessage()]);
                 }
             }
         }

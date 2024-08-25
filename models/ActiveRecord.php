@@ -105,8 +105,10 @@ class ActiveRecord {
     }
 
     // Devuelve todos los registros
-    public static function all($campo_ordenacion = "") {
-        $query = "SELECT * FROM " . static::$tabla . " ORDER BY " . $campo_ordenacion;
+    public static function all(string $order = "", int $limit = 0) {
+        $orderBy = (!empty($order) ? " ORDER BY " . $order  : "");
+        $limit = $limit > 0 ? " LIMIT " . $limit : "";
+        $query = "SELECT * FROM " . static::$tabla . $orderBy . $limit;
         $resultado = self::consultarSQL($query);
         return $resultado;
     }
@@ -190,7 +192,10 @@ class ActiveRecord {
     public function eliminar() {
         $query = "DELETE FROM "  . static::$tabla . " WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1";
         $resultado = self::$db->query($query);
-        return $resultado;
+        return [
+            "resultado" => $resultado,
+            "id" => $this->id 
+        ];
     }
 
 }

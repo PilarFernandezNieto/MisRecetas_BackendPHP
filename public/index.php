@@ -3,6 +3,7 @@ require_once __DIR__ . '/../includes/app.php';
 
 use MVC\Router;
 
+use Controllers\AuthController;
 use Controllers\RecetaController;
 use Controllers\IngredienteController;
 use Controllers\RecetaIngredienteController;
@@ -23,6 +24,13 @@ $router->delete("/api/ingredientes/eliminar/:id", [IngredienteController::class,
 
 $router->get("/api/receta-ingrediente", [RecetaIngredienteController::class, "index"]);
 $router->post("/api/receta-ingrediente",[RecetaIngredienteController::class, "crear"] );
+
+// Autenticación y registro de usuarios /api/auth
+$router->post("/api/auth/registro", [AuthController::class, "registro"]);
+$router->get('api/auth/confirmar-cuenta', [AuthController::class, 'confirmar']);
+$router->get('api/auth/login', [AuthController::class, 'login']);
+
+
 
 
 // Comprueba y valida las rutas, que existan y les asigna las funciones del Controlador

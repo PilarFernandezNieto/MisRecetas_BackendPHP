@@ -73,7 +73,7 @@ class Usuario extends ActiveRecord {
 
     public function validarPassword(){
         if(!$this->password){
-            self::$alertas["error"][] = "El password es obligatorio";
+            self::$alertas["error"][] = ["msg" =>"El password es obligatorio"];
         }
         if(strlen($this->password) < 6){
             self::$alertas["error"][] = "El password debe tener al menos 6 caracteres";
@@ -83,10 +83,11 @@ class Usuario extends ActiveRecord {
 
     public function existeUsuario(){
         $qry = "SELECT * FROM ". self::$tabla ." WHERE email = '".$this->email. "' LIMIT 1";
+        
        
         $resultado = self::$db->query($qry);
 
-        if(!$resultado->num_rows){
+        if($resultado->num_rows){
             self::$alertas["error"][] = "El usuario ya está registrado";
             
         }

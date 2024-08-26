@@ -74,7 +74,7 @@ class ActiveRecord {
         $atributos = $this->atributos();
         $sanitizado = [];
         foreach($atributos as $key => $value ) {
-            $sanitizado[$key] = self::$db->escape_string($value);
+            $sanitizado[$key] = self::$db->escape_string($value ?? "");
         }
         return $sanitizado;
     }
@@ -145,6 +145,7 @@ class ActiveRecord {
     public function crear() {
         // Sanitizar los datos
         $atributos = $this->sanitizarAtributos();
+        
 
         // Insertar en la base de datos
         $query = " INSERT INTO " . static::$tabla . " ( ";

@@ -87,11 +87,6 @@ class IngredienteController {
                 }
             }
 
-           
-
-          
-
-      
         }
     }
     public static function eliminar($id) {

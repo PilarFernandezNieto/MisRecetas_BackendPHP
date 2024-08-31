@@ -27,8 +27,8 @@ $router->post("/api/receta-ingrediente",[RecetaIngredienteController::class, "cr
 
 // Autenticación y registro de usuarios /api/auth
 $router->post("/api/auth/registro", [AuthController::class, "registro"]);
-$router->get('api/auth/confirmar-cuenta', [AuthController::class, 'confirmar']);
-$router->get('api/auth/login', [AuthController::class, 'login']);
+$router->get('/api/auth/confirmar-cuenta', [AuthController::class, 'confirmar']);
+$router->post('/api/auth/login', [AuthController::class, 'login']);
 
 
 

@@ -20,13 +20,14 @@ class Ingrediente extends ActiveRecord {
         $this->descripcion = $args["descripcion"] ?? "";
     }
 
-    // Mensajes de validación para la creación de una cuenta
-    public function validar(){
+    // Mensajes de validación para el formulario de creación
+    public function validar() : array{
         if(!$this->nombre){
-            self::$alertas["error"][] =  "El nombre es obligatorio";
+            self::$alertas =["result" => "error", "msg" => "El nombre es obligatorio"]  ;
         }
         if (!$this->descripcion) {
-            self::$alertas["error"][] =  "Una pequeña descripción";
+            self::$alertas =["result" => "error", "msg" => "Una pequeña descripción"]  ;
+
         }
         return self::$alertas;
     }

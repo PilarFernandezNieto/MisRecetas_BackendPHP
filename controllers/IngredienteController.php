@@ -14,15 +14,9 @@ class IngredienteController {
 
     public static function crear() {
         $ingrediente = new Ingrediente();
-        $alertas = [];
-
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
             $ingrediente->sincronizar($_POST);
-
             $alertas = $ingrediente->validar();
-            $resultado = "";
-
             if (empty($alertas)) {
                 try {
                     $resultado = $ingrediente->guardar();
@@ -55,13 +49,19 @@ class IngredienteController {
         }
     }
     public static function getById($id) {
+        if (empty($id) || !filter_var($id, FILTER_VALIDATE_INT) || $id <= 0) {
+            echo json_encode(["result" => "error", "msg"=> "ID no válido"]);
+            http_response_code(400);
+            return;
+        }
         $ingrediente = Ingrediente::find($id);
 
-        echo json_encode($ingrediente);
+        echo json_encode(["result" => "success", "ingrediente" =>$ingrediente]);
     }
 
 
     public static function actualizar($id) {
+        $resultado = "";
         if ($_SERVER["REQUEST_METHOD"] === "PUT") {
             $putData = file_get_contents("php://input");
 
@@ -69,19 +69,39 @@ class IngredienteController {
 
             $ingrediente = Ingrediente::find($id);
             if (!$ingrediente) {
-                echo json_encode(["resultado" => "No se ha encontrado el ingrediente"]);
+                echo json_encode(["result" => "error", "msg" =>"No se ha encontrado el ingrediente"]);
             } else {
                 $ingrediente->sincronizar($data);
                 $alertas = $ingrediente->validar();
                 if (empty($alertas)) {
-                    $resultado = $ingrediente->guardar();
-                    echo json_encode(
-                        [
-                            "resultado" => $resultado,
-                            "msg" => "Actualizado correctamente",
-                            "ingrediente" => $ingrediente
-                        ]
-                    );
+                    try {
+                        $resultado = $ingrediente->guardar();
+                        echo json_encode(
+                            [
+                                "result" => $resultado,
+                                "msg" => "Actualizado correctamente",
+                                "ingrediente" => $ingrediente
+                            ]
+                        );
+
+                    } catch (\Exception $e) {
+                        if ($e->getCode() === 1062) {
+                            echo json_encode(
+                                [
+                                    "resultado" => "error",
+                                    "msg" => "Ese ingrediente ya existe"
+                                ]
+                            );
+                        } else {
+                            echo json_encode(
+                                [
+                                    "resultado" => "error",
+                                    "msg" => "Ha ocurrido un error"
+                                ]
+                            );
+                        }
+                    }
+
                 } else {
                     echo json_encode(["alertas" => $alertas]);
                 }
@@ -95,13 +115,13 @@ class IngredienteController {
 
             $ingrediente = Ingrediente::find($id);
             if (!$ingrediente) {
-                echo json_encode(["resultado" => "No se ha encontrado el ingrediente"]);
+                echo json_encode(["result" => "error", "msg" => "No se ha encontrado el ingrediente"]);
             } else {
                 try {
                     $resultado = $ingrediente->eliminar();
-                    echo json_encode(["resultado" => $resultado]);
+                    echo json_encode(["result" => "success", "msg" => "Eliminado correctamente", "resultado" => $resultado]);
                 } catch (\Exception $error) {
-                    echo json_encode(["error" => $error->getMessage()]);
+                    echo json_encode(["result" =>"error", "msg" => $error->getMessage()]);
                 }
             }
         }

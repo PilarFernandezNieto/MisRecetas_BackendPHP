@@ -42,16 +42,15 @@ class Router {
                 // Si no hay coincidencia exacta, intenta encontrar una coincidencia con parámetros
                 foreach ($this->rutasGET as $ruta => $fn) {
                     // Convierte :param en una expresión regular para capturar números (o otros tipos)
-                    $rutaRegex = preg_replace('/:\w+/', '(\d+)', $ruta);
-                    
+                    //$rutaRegex = preg_replace('/:\w+/', '(\d+)', $ruta);
+                    $rutaRegex = preg_replace('/:\w+/', '([^/]+)', $ruta);
+
                     if (preg_match("#^$rutaRegex$#", $urlActual, $matches)) {
                         // Llama a la función con los parámetros capturados
                         return call_user_func_array($fn, array_slice($matches, 1));
                     }
                 }
             }
-          
-            
 
         } else if ($metodo === "POST") {
             $fn = $this->rutasPOST[$urlActual] ?? null;

@@ -3,14 +3,13 @@
 namespace Controllers;
 
 use Clases\Email;
+use Exception;
 use Model\Usuario;
 
-class AuthController
-{
+class AuthController {
 
 
-    public static function login(): void
-    {
+    public static function login(): void {
         $resultado = [];
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $auth = new Usuario($_POST);
@@ -18,27 +17,22 @@ class AuthController
             $alertas = $auth->validarPassword();
 
             if (empty($alertas)) {
-                // Comprobar que exista el usuario
+                // TODO comprobar si la función existe usuario vale aquí también
                 $usuario = Usuario::where('email', $auth->email);
                 if ($usuario) {
-                    // Verificar el password
-                    if ($usuario->comprobarPassword($auth->password)) {
+                    try{
+                    $usuario->comprobarPassword($auth->password);
                         // Autenticar el usuario
                         if (!isset($_SESSION)) {
                             session_start();
                         }
-
                         $_SESSION['id'] = $usuario->id;
                         $_SESSION['nombre'] = $usuario->nombre . " " . $usuario->apellidos;
                         $_SESSION['email'] = $usuario->email;
 
-                    } else {
-                        $resultado =
-                            [
-                                "result" => "error",
-                                "msg" => Usuario::getAlertas()
-                            ];
-
+                    } catch (Exception $e) {
+                        http_response_code(409);
+                        echo json_encode(["result" => "error", "msg" => $e->getMessage()]);
                     }
 
                 } else {
@@ -47,8 +41,6 @@ class AuthController
                             "result" => "error",
                             "msg" => "Usuario no encontrado"
                         ];
-
-
                 }
 
             } else {
@@ -57,28 +49,14 @@ class AuthController
                         "result" => "error",
                         "msg" => $alertas
                     ];
-
             }
             echo json_encode($resultado);
         }
-
-
-
-
     }
 
-    public static function registro(): void
-    {
+    public static function registro(): void {
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            // Cuando los datos se envían en json desde postman
-            // // Leer el contenido JSON del cuerpo de la solicitud
-            // $data = file_get_contents("php://input");
-            // // Decodificar el JSON en un array asociativo
-            // $json_data = json_decode($data, true);
-
-            // Para recibirlos en post, debemos enviar desde postman un content-type application/x-www-form-urlencoded
-
             $usuario = new Usuario();
             $alertas = [];
 
@@ -89,60 +67,47 @@ class AuthController
 
             }
             if (empty($alertas)) {
-
-                $resultado = $usuario->existeUsuario();
-
-                if ($resultado->num_rows) {
-                    $alertas = Usuario::getAlertas();
-
-                } else {
-                    // Hashear password
+                try {
+                    $usuario->existeUsuario();
                     $usuario->hashPassword();
-
-                    // Generar un token único
                     $usuario->crearToken();
-
-                    // // Enviar el email
                     $email = new Email($usuario->email, $usuario->nombre, $usuario->token);
                     $email->enviarConfirmacion();
 
-                    // Crear el usuario
                     $resultado = $usuario->guardar();
+                    echo json_encode(["msg" => "Usuario creado correctamente, revise su email", "usuario" => $usuario, "alertas" => $alertas]);
 
+                } catch (Exception $e){
+                    http_response_code(409);
+                    echo json_encode(["result" => "error", "msg" => $e->getMessage()]);
                 }
             } else {
                 echo json_encode(["msg" => $alertas]);
             }
-
-            echo json_encode(["msg" => "Usuario creado correctamente, revise su email", "usuario" => $usuario, "alertas" => $alertas]);
         }
     }
 
-    public static function confirmar()
-    {
+    public static function confirmar($token) {
         $alertas = [];
-        $token = s($_GET['token']);
+
+        $token = s($token);
 
         $usuario = Usuario::where('token', $token);
 
-
         if (empty($usuario)) {
-            // Mostrar mensaje de error
-            Usuario::setAlerta('error', 'Token No Válido');
+         Usuario::setAlerta("error", "Token no encontrado");
         } else {
-            debuguear($usuario);
 
-            // Modificar a usuario confirmado
             $usuario->confirmado = 1;
             $usuario->token = null;
             $usuario->guardar();
 
-            Usuario::setAlerta('success', 'Cuenta Comprobada Correctamente');
+            Usuario::setAlerta('success', 'Cuenta Confirmada Correctamente');
         }
 
         // Obtener alertas
         $alertas = Usuario::getAlertas();
-        echo json_encode(["msg" => $alertas]);
+        echo json_encode( $alertas);
 
 
     }

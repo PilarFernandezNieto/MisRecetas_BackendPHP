@@ -22,7 +22,7 @@ class IngredienteController {
                     $resultado = $ingrediente->guardar();
                     echo json_encode(
                         [
-                            "resultado" => $resultado,
+                            "result" => $resultado,
                             "msg" => "Creado correctamente"
                         ]
                     );
@@ -30,14 +30,14 @@ class IngredienteController {
                     if ($e->getCode() === 1062) {
                         echo json_encode(
                             [
-                                "resultado" => "error",
+                                "result" => "error",
                                 "msg" => "Ese ingrediente ya existe"
                             ]
                         );
                     } else {
                         echo json_encode(
                             [
-                                "resultado" => "error",
+                                "result" => "error",
                                 "msg" => "Ha ocurrido un error"
                             ]
                         );
@@ -88,14 +88,14 @@ class IngredienteController {
                         if ($e->getCode() === 1062) {
                             echo json_encode(
                                 [
-                                    "resultado" => "error",
+                                    "result" => "error",
                                     "msg" => "Ese ingrediente ya existe"
                                 ]
                             );
                         } else {
                             echo json_encode(
                                 [
-                                    "resultado" => "error",
+                                    "result" => "error",
                                     "msg" => "Ha ocurrido un error"
                                 ]
                             );

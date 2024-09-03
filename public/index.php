@@ -10,6 +10,16 @@ use Controllers\RecetaIngredienteController;
 
 $router = new Router();
 
+$router->get('/', function() {
+    echo "Bienvenido a la API. Navega a /api/recetas o /api/auth para acceder a los recursos.";
+});
+
+$router->get('/404', function() {
+    http_response_code(404);
+    echo "Ruta no encontrada";
+});
+
+
 $router->get("/api/recetas", [RecetaController::class, "index"]);
 $router->post("/api/recetas",[RecetaController::class, "crear"] );
 $router->get("/api/recetas/ver-receta", [RecetaController::class, "getById"]);
@@ -27,7 +37,7 @@ $router->post("/api/receta-ingrediente",[RecetaIngredienteController::class, "cr
 
 // Autenticación y registro de usuarios /api/auth
 $router->post("/api/auth/registro", [AuthController::class, "registro"]);
-$router->get('/api/auth/confirmar-cuenta', [AuthController::class, 'confirmar']);
+$router->get('/api/auth/confirmar-cuenta/:token', [AuthController::class, 'confirmar']);
 $router->post('/api/auth/login', [AuthController::class, 'login']);
 
 

@@ -2,6 +2,8 @@
 
 namespace Model;
 
+use Exception;
+
 class Usuario extends ActiveRecord {
     protected static $tabla = "usuarios";
     protected static $columnasDB = [
@@ -69,27 +71,18 @@ class Usuario extends ActiveRecord {
     public function comprobarPassword($password){
         $resultado = password_verify($password, $this->password);
         if(!$resultado) {
-
-         self::$alertas = "Password incorrecto";
-
-
-        } else {
-            return true;
+            throw new Exception("La contraseña no es correcta");
         }
+        return true;
     }
 
 
     public function existeUsuario(){
         $qry = "SELECT * FROM ". self::$tabla ." WHERE email = '".$this->email. "' LIMIT 1";
-        
-       
         $resultado = self::$db->query($qry);
-
-        if($resultado->num_rows){
-            self::$alertas["error"][] = "El usuario ya está registrado";
-            
+        if ($resultado->num_rows > 0) {
+            throw new Exception("El usuario ya está registrado.");
         }
-       
         return $resultado;
     }
 

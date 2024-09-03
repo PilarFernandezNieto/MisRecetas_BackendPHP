@@ -34,9 +34,9 @@ class Email{
 
         $contenido = "<html>";
         $contenido .= "<p><strong>Hola ".$this->nombre . "</strong>. Has creado tu cuenta en MisRecetas, sólo debes confirmarla presionando el siguiente enlace</p>";
-        $contenido.= "<p>Presiona <a href='".$_ENV['APP_URL']."/api/auth/confirmar-cuenta?token=" . $this->token .  "'>aquí</a></p>";
+        $contenido.= "<p>Presiona <a href='".$_ENV['APP_URL']."/auth/confirmar-cuenta/" . $this->token .  "'>aquí</a></p>";
 
-        $contenido .= "<p>Si tu no solicitaste esta cuenta puedes ignorar el mensaje</p>";
+        $contenido .= "<p>Si tú no has creado esta cuenta puedes ignorar el mensaje</p>";
         $contenido .= "</html>";
 
         $mail->Body = $contenido;

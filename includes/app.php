@@ -9,6 +9,7 @@ $dotenv->safeLoad();
 require 'funciones.php';
 require 'database.php';
 require 'cors.php';
+require 'jwt.php';
 
 
 // Conectarnos a la base de datos

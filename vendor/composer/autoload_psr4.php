@@ -14,6 +14,7 @@ return array(
     'Model\\' => array($baseDir . '/models'),
     'MVC\\' => array($baseDir . '/'),
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
+    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
     'Controllers\\' => array($baseDir . '/controllers'),
     'Clases\\' => array($baseDir . '/clases'),

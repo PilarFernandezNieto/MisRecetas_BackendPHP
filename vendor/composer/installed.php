@@ -3,13 +3,22 @@
         'name' => 'usuario/backend-php',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'aba5d97a8ca4995400b7bceacf702f15b8d43149',
+        'reference' => 'a7c68b6470a757e39df47ec51b2205af55b6e40f',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
+        'firebase/php-jwt' => array(
+            'pretty_version' => 'v6.10.1',
+            'version' => '6.10.1.0',
+            'reference' => '500501c2ce893c824c801da135d02661199f60c5',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../firebase/php-jwt',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'graham-campbell/result-type' => array(
             'pretty_version' => 'v1.1.3',
             'version' => '1.1.3.0',
@@ -67,7 +76,7 @@
         'usuario/backend-php' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'aba5d97a8ca4995400b7bceacf702f15b8d43149',
+            'reference' => 'a7c68b6470a757e39df47ec51b2205af55b6e40f',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

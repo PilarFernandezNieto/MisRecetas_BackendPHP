@@ -15,39 +15,45 @@ class AuthController {
             $auth = new Usuario($_POST);
             $alertas = $auth->validarEmail();
             $alertas = $auth->validarPassword();
-
             if (empty($alertas)) {
-                // TODO comprobar si la función existe usuario vale aquí también
                 $usuario = Usuario::where('email', $auth->email);
+
                 if ($usuario) {
-                    try{
-                    $usuario->comprobarPassword($auth->password);
-                        // Autenticar el usuario
-                        if (!isset($_SESSION)) {
-                            session_start();
-                        }
-                        $_SESSION['id'] = $usuario->id;
-                        $_SESSION['nombre'] = $usuario->nombre . " " . $usuario->apellidos;
-                        $_SESSION['email'] = $usuario->email;
-
-                    } catch (Exception $e) {
-                        http_response_code(409);
-                        echo json_encode(["result" => "error", "msg" => $e->getMessage()]);
-                    }
-
-                } else {
-                    $resultado =
-                        [
+                    if (!$usuario->confirmado) {
+                        $resultado = [
                             "result" => "error",
-                            "msg" => "Usuario no encontrado"
+                            "msg" => "La cuenta todavía no ha sido confirmada"
                         ];
+
+                    } else {
+                        try {
+                            $usuario->comprobarPassword($auth->password);
+                            $isAdmin = $usuario->admin;
+                            $token = generateJwt($usuario->id, $isAdmin);
+                            $resultado = [
+                                "token" => $token
+                            ];
+
+                        } catch (Exception $e) {
+                            http_response_code(409);
+                            $resultado = [
+                                "result" => "error",
+                                "msg" => $e->getMessage()
+                            ];
+                        }
+                    }
+                } else {
+                    $resultado = [
+                        "result" => "error",
+                        "msg" => "Usuario no encontrado"
+                    ];
                 }
 
             } else {
                 $resultado =
                     [
                         "result" => "error",
-                        "msg" => $alertas
+                        "msg" => Usuario::getAlertas()
                     ];
             }
             echo json_encode($resultado);
@@ -77,7 +83,7 @@ class AuthController {
                     $resultado = $usuario->guardar();
                     echo json_encode(["msg" => "Usuario creado correctamente, revise su email", "usuario" => $usuario, "alertas" => $alertas]);
 
-                } catch (Exception $e){
+                } catch (Exception $e) {
                     http_response_code(409);
                     echo json_encode(["result" => "error", "msg" => $e->getMessage()]);
                 }
@@ -95,7 +101,7 @@ class AuthController {
         $usuario = Usuario::where('token', $token);
 
         if (empty($usuario)) {
-         Usuario::setAlerta("error", "Token no encontrado");
+            Usuario::setAlerta("error", "Token no encontrado");
         } else {
 
             $usuario->confirmado = 1;
@@ -107,8 +113,15 @@ class AuthController {
 
         // Obtener alertas
         $alertas = Usuario::getAlertas();
-        echo json_encode( $alertas);
+        echo json_encode($alertas);
 
 
+    }
+
+    public static function user(){
+        $headers = getallheaders();
+        $user = verificarJWT($headers);
+        $user = onlyAdmin($user);
+        echo json_encode($user);
     }
 }

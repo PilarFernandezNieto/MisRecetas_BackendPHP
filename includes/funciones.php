@@ -1,5 +1,6 @@
 <?php
 
+
 function debuguear($variable, $die = true)   {
     echo "<pre>";
     var_dump($variable);
@@ -34,3 +35,5 @@ function esUltimo(string|int $actual, string $proximo): bool {
         return false;
     }
 }
+
+

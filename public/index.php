@@ -13,6 +13,9 @@ $router = new Router();
 $router->get('/', function() {
     echo "Bienvenido a la API. Navega a /api/recetas o /api/auth para acceder a los recursos.";
 });
+$router->get('/admin', function() {
+    echo "Bienvenido a admin.";
+});
 
 $router->get('/404', function() {
     http_response_code(404);
@@ -34,6 +37,10 @@ $router->delete("/api/ingredientes/eliminar/:id", [IngredienteController::class,
 
 $router->get("/api/receta-ingrediente", [RecetaIngredienteController::class, "index"]);
 $router->post("/api/receta-ingrediente",[RecetaIngredienteController::class, "crear"] );
+
+// Area privada
+$router->get("/api/auth/user", [AuthController::class, "user"]);
+
 
 // Autenticación y registro de usuarios /api/auth
 $router->post("/api/auth/registro", [AuthController::class, "registro"]);

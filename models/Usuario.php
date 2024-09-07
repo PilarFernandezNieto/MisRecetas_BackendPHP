@@ -71,9 +71,15 @@ class Usuario extends ActiveRecord {
     public function comprobarPassword($password){
         $resultado = password_verify($password, $this->password);
         if(!$resultado) {
-            throw new Exception("La contraseña no es correcta");
+            throw new Exception("La contraseña no es correcta", 400);
         }
         return true;
+    }
+    public function verificarCuentaConfirmada(){
+        if(!$this->confirmado){
+            throw new Exception("La cuenta no ha sido confirmada", 409);
+        }
+       return true;
     }
 
 

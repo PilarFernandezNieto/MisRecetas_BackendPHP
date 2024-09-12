@@ -118,10 +118,15 @@ class AuthController {
 
     }
 
-    public static function user(){
+    public static function user() {
         $headers = getallheaders();
-        $user = verificarJWT($headers);
-        $user = onlyAdmin($user);
-        echo json_encode($user);
+        if(isset($headers['Authorization'])) {
+            $user = verificarJWT($headers);
+            echo json_encode($user);
+        } else {
+            echo json_encode("No hay usuario");
+        }
+
+
     }
 }

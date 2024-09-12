@@ -46,20 +46,29 @@ class RecetaController {
         $alertas = [];
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-
             $receta->sincronizar($_POST);
-
             $alertas = $receta->validar();
             $resultado = "";
 
             if (empty($alertas)) {
+
+
+                if(!empty($_FILES["imagen"]["tmp_name"])){
+                    if (!is_dir(CARPETA_IMAGENES)) {
+                        mkdir(CARPETA_IMAGENES);
+                    }
+                    echo CARPETA_IMAGENES;
+                    $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
+                    move_uploaded_file($_FILES['imagen']['tmp_name'], CARPETA_IMAGENES . $nombreImagen);
+                    $receta->imagen = $nombreImagen;
+                }
+
                 $resultado = $receta->guardar();
                 $id_receta = $resultado["id"];
                 if ($id_receta) {
                     $ingredientesIds = $_POST["ingrediente_id"] ?? "";
                     $cantidades = $_POST["cantidad"] ?? "";
-                  
+
 
                    for($i=0; $i<count($ingredientesIds); $i++) {
                     $id_ingrediente = $ingredientesIds[$i];
@@ -69,8 +78,11 @@ class RecetaController {
                             'id_ingrediente' => $id_ingrediente,
                             "cantidad" => $cantidad
                         ]);
+
                         $recetaIngrediente->sincronizar();
+
                         $recetaIngrediente->guardar();
+
                     }
                 }
                 echo json_encode([

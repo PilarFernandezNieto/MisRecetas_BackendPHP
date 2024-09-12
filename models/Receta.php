@@ -29,7 +29,7 @@ class Receta extends ActiveRecord {
     }
 
     // Mensajes de validación para la creación de una cuenta
-    public function validar() {
+    public function validar(): array {
         if (!$this->nombre) {
             self::$alertas["error"][] =  "El nombre es obligatorio";
         }

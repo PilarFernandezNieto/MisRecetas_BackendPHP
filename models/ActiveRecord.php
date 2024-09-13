@@ -270,6 +270,23 @@ class ActiveRecord {
         ];
     }
 
+    public function setImagen($imagen) {
+        if (isset($this->id)) {
+            $this->borrarImagen();
+        }
+        if ($imagen) {
+            $this->imagen = $imagen;
+        }
+    }
+    public function borrarImagen() {
+        $existeArchivo = file_exists(CARPETA_IMAGENES .  $this->imagen);
+
+        if ($existeArchivo) {
+
+            unlink(CARPETA_IMAGENES . $this->imagen);
+        }
+    }
+
 
 
 }

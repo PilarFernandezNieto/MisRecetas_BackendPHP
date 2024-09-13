@@ -53,7 +53,17 @@ class Router {
             }
 
         } else if ($metodo === "POST") {
-            $fn = $this->rutasPOST[$urlActual] ?? null;
+            //$fn = $this->rutasPOST[$urlActual] ?? null;
+            foreach ($this->rutasPOST as $ruta => $fn) {
+
+                $rutaRegex = preg_replace('/:\w+/', '(\d+)', $ruta);
+                if (preg_match("#^$rutaRegex$#", $urlActual, $matches)) {
+
+                    return call_user_func_array($fn, array_slice($matches, 1));
+                }
+            }
+
+
 
         } else if ($metodo === "PUT" ) {
             foreach ($this->rutasPUT as $ruta => $fn) {

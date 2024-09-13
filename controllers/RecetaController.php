@@ -12,8 +12,8 @@ class RecetaController {
 
     public static function index() {
         $recetas = Receta::all();
-        $recetaCompleta = [];
         $recetasCompletas = [];
+
 
         foreach ($recetas as $receta) {
             $ingredientes = Ingrediente::ingredientesPorReceta($receta->id);
@@ -23,22 +23,38 @@ class RecetaController {
             ];
             $recetasCompletas[] = $recetaCompleta;
         }
+
         echo json_encode($recetasCompletas);
     }
 
-    public static function getById(){
-  
-        if(!is_numeric($_GET["id"])) return;
-        $receta = Receta::find($_GET["id"]);
-        $ingredientes = Ingrediente::ingredientesPorReceta($receta->id);
-     
-        
-        $recetaCompleta = [
-            "receta" => $receta,
-            "ingredientes" => $ingredientes
-        ];
-        echo json_encode($recetaCompleta);
+    public static function getReceta(){
+        $receta =[];
+        if(isset($_GET["nombre"])){
+            $nombre = s($_GET["nombre"]);
+            $receta = Receta::getByName($nombre);
+        } else if(isset($_GET["id"])){
+            if(!is_numeric($_GET["id"])) return;
+            $receta = Receta::find($_GET["id"]);
+
+
+        }
+        if($receta){
+            $ingredientes = Ingrediente::ingredientesPorReceta($receta->id);
+            $recetaCompleta = [
+                "receta" => $receta,
+                "ingredientes" => $ingredientes
+            ];
+            echo json_encode($recetaCompleta);
+        } else{
+            echo json_encode([
+                'resultado' => 'error',
+                'mensaje' => 'No hay datos'
+            ]);
+        }
+
     }
+
+
 
     public static function crear() {
         $receta = new Receta();

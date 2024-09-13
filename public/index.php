@@ -25,7 +25,7 @@ $router->get('/404', function() {
 
 $router->get("/api/recetas", [RecetaController::class, "index"]);
 $router->post("/api/recetas",[RecetaController::class, "crear"] );
-$router->get("/api/recetas/ver-receta", [RecetaController::class, "getById"]);
+$router->get("/api/recetas/ver-receta", [RecetaController::class, "getReceta"]);
 $router->put("/api/recetas/actualizar/:id", [RecetaController::class, "actualizar"]);
 $router->post("/api/recetas/eliminar/:id", [RecetaController::class, "eliminar"]);
 

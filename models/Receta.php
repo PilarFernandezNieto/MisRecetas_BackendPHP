@@ -18,29 +18,28 @@ class Receta extends ActiveRecord {
     public $origen;
 
 
-
     public function __construct($args = []) {
         $this->id = $args["id"] ?? null;
         $this->nombre = $args["nombre"] ?? "";
         $this->instrucciones = $args["instrucciones"] ?? "";
         $this->imagen = $args["imagen"] ?? "";
         $this->origen = $args["origen"] ?? "";
-        
+
     }
 
     // Mensajes de validación para la creación de una cuenta
     public function validar(): array {
         if (!$this->nombre) {
-            self::$alertas["error"][] =  "El nombre es obligatorio";
+            self::$alertas["error"][] = "El nombre es obligatorio";
         }
         if (!$this->instrucciones) {
-            self::$alertas["error"][] =  "Algunas instrucciones son necesarias";
+            self::$alertas["error"][] = "Algunas instrucciones son necesarias";
         }
         return self::$alertas;
     }
 
     public static function recetasCompletas() {
-   
+
         $query = "
         SELECT r.*, i.id AS ingrediente_id, i.nombre AS ingrediente_nombre
         FROM recetas r
@@ -58,6 +57,15 @@ class Receta extends ActiveRecord {
         } else {
             return $resultado;
         }
-     
+
     }
+
+    public static function getByName($nombre) {
+        $query = "SELECT * FROM " . self::$tabla . " WHERE nombre like '%" . $nombre . "%'";
+        $resultado = static::consultarSQL($query);
+
+        return array_shift($resultado);
+    }
+
+
 }

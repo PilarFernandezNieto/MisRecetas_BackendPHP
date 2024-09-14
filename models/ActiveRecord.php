@@ -76,6 +76,7 @@ class ActiveRecord {
                 $objeto->$key = $value;
             }
         }
+
         return $objeto;
     }
 
@@ -127,8 +128,10 @@ class ActiveRecord {
     public function guardar() :mixed {
         $resultado = "";
         if (!is_null($this->id)) {
+            echo "actualiza " . "<br>";
             $resultado = $this->actualizar();
         } else {
+            echo "guarda " . "<br>";
             $resultado = $this->crear();
         }
 
@@ -279,11 +282,22 @@ class ActiveRecord {
         }
     }
     public function borrarImagen() {
-        $existeArchivo = file_exists(CARPETA_IMAGENES .  $this->imagen);
+        $rutaImagen = CARPETA_IMAGENES . $this->imagen;
+//        echo $rutaImagen;
+//        if(is_file($rutaImagen)){
+//            if(unlink($rutaImagen)){
+//                echo "Imagen eliminada";
+//            } else {
+//                echo "Error al eliminar la imagen";
+//            }
+//        } else {
+//            echo "La imagen no existe o la ruta no es válida";
+//        }
+        $existeArchivo = file_exists($rutaImagen);
 
         if ($existeArchivo) {
 
-            unlink(CARPETA_IMAGENES . $this->imagen);
+            unlink($rutaImagen);
         }
     }
 

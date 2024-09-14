@@ -37,6 +37,7 @@ class RecetaIngrediente extends ActiveRecord {
             'mensaje' => 'Error en la consulta: ' . self::$db->error
         ];
     } else {
+
         return $resultado;
     }
 
@@ -45,7 +46,8 @@ class RecetaIngrediente extends ActiveRecord {
     $query = "
     DELETE FROM receta_ingrediente WHERE id_receta = $id_receta AND id_ingrediente = $id_ingrediente
     ";
-    $resultado = self::SQL($query);
+
+    $resultado = self::$db->query($query);
     if (!$resultado) {
         return [
             'resultado' => 'error',
@@ -56,6 +58,7 @@ class RecetaIngrediente extends ActiveRecord {
     }
     
   }
+
 
     
 

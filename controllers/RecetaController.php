@@ -110,30 +110,86 @@ class RecetaController {
 
     public static function actualizar($id) {
         $receta = Receta::find($id);
+        $alertas = [];
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $argsReceta["nombre"] = $_POST['nombre'];
-            $argsReceta["instrucciones"] = $_POST['instrucciones'];
-            $argsReceta["origen"] = $_POST['origen'];
-            $receta->sincronizar($argsReceta);
+            if($receta) {
+                $alertas = $receta->validar();
+                if (empty($alertas)) {
 
+                    // Actualizamos la receta
+                    $argsReceta["nombre"] = $_POST['nombre'];
+                    $argsReceta["instrucciones"] = $_POST['instrucciones'];
+                    $argsReceta["origen"] = $_POST['origen'];
+                    $receta->sincronizar($argsReceta);
 
-            $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
+                    // Actualizamos la imagen si cambia
+                    $nombreImagen = md5(uniqid(rand(), true)) . ".jpg";
+                    if ($_FILES["imagen"]["tmp_name"]) {
+                        move_uploaded_file($_FILES['imagen']['tmp_name'], CARPETA_IMAGENES . $nombreImagen);
+                        $receta->setImagen($nombreImagen);
+                    }
+                    $resultado = $receta->guardar();
 
-            if ($_FILES["imagen"]["tmp_name"]) {
-                //move_uploaded_file($_FILES['imagen']['tmp_name'], CARPETA_IMAGENES . $nombreImagen);
-                $receta->setImagen($nombreImagen);
+                    if ($resultado) {
+                        // Actualizamos ingredientes y cantidades
+                        $ingredientesIds = $_POST["ingrediente_id"] ?? "";
+                        $cantidades = $_POST["cantidad"] ?? "";
+                        $recetaIngredientes = RecetaIngrediente::ingredientesPorReceta($receta->id);
+                        $ingredientesExistentes = [];
+
+                        foreach ($recetaIngredientes as $recetaIngrediente) {
+                            $ingredientesExistentes[$recetaIngrediente->id_ingrediente] = $recetaIngrediente;
+                        }
+
+                        foreach ($ingredientesIds as $index => $id_ingrediente) {
+                            $cantidad = $cantidades[$index];
+                            if (isset($ingredientesExistentes[$id_ingrediente])) {
+                                if ($ingredientesExistentes[$id_ingrediente]->cantidad != $cantidad) {
+                                    $recetaIngrediente = $ingredientesExistentes[$id_ingrediente];
+                                    $recetaIngrediente->cantidad = $cantidad;
+                                    $recetaIngrediente->sincronizar([
+                                        "id_receta" => $receta->id,
+                                        "id_ingrediente" => $id_ingrediente,
+                                        "cantidad" => $cantidad
+                                    ]);
+                                    $recetaIngrediente->guardar();
+                                }
+                                unset($ingredientesExistentes[$id_ingrediente]);
+                            } else {
+                                // El ingrediente no existe, agregarlo
+                                $nuevoRecetaIngrediente = new RecetaIngrediente([
+                                    "id_receta" => $receta->id,
+                                    "id_ingrediente" => $id_ingrediente,
+                                    "cantidad" => $cantidad
+                                ]);
+                                $nuevoRecetaIngrediente->sincronizar();
+                                $nuevoRecetaIngrediente->guardar();
+                            }
+                        }
+                        foreach ($ingredientesExistentes as $ingredienteExistente) {
+                            //debuguear($ingredienteExistente);
+                            $ingredienteExistente->eliminarIngredienteDeReceta($ingredienteExistente->id_receta, $ingredienteExistente->id_ingrediente);
+                        }
+                    }
+                    echo json_encode([
+                        'resultado' => 'success',
+                        'mensaje' => 'Receta actualizada correctamente'
+                    ]);
+
+                } else {
+                    echo json_encode([
+                        'resultado' => 'error',
+                        'mensaje' => 'Hubo un error al actualizar la receta',
+                        'alertas' => $alertas
+                    ]);
+                }
+            } else {
+                echo json_encode([
+                    'resultado' => 'error',
+                    'mensaje' => 'No existe la receta'
+                ]);
             }
-            //$resultado = $receta->guardar();
-            $ingredientesIds = $_POST["ingrediente_id"] ?? "";
-            $cantidades = $_POST["cantidad"] ?? "";
-
-
-
-
-
-
-
         }
 
     }
